@@ -1,4 +1,5 @@
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import groovy.sql.Sql
 
 
@@ -31,9 +32,10 @@ sql.eachRow('select * from SFWizard') {
         wizardComponent.content.component.customActionType = it.customActionType
         wizardComponent.content.component.customUrl = it.customUrl
         def getPageData = "select * from SFPageLayout where page_layout_id = (select page_layout_id from SFProcess where process_id = '" + it.process_id + "')"
-        println getPageData
+        //println getPageData
         sql.eachRow(getPageData) {
-            wizardComponent.content.component.page_data = it.page_data
+            def slurper = new JsonSlurper()
+            wizardComponent.content.component.page_data = slurper.parseText(it.page_data)
         }
 
         array << wizardComponent.content.component
